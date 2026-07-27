@@ -1,0 +1,8 @@
+Starglider II Cheat Mode
+------------------------
+Reduce your ship's speed to the minimum setting, press F to fix the gun sights, and press [Backspace] to pause game play.
+Type "were on a mission from god" to enable cheat mode.
+Press one of the following keys to activate the corresponding cheat function:-
+
+1 - Fixed shield and energy levels
+K - All weapons
