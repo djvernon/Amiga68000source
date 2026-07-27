@@ -1,0 +1,5 @@
+tileNew.bin created from tileNew.iff using GimmeIt as follows:-
+
+Click GIMMEBINARY
+(Use default options)
+Click 'LOAD AND CONVERT'

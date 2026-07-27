@@ -1,0 +1,19 @@
+Here you are!
+
+Red tiles are used as landscape tiles.  There’s 2 “banks” of these (top 8 and bottom 8) which are selected and decrunched as you change screens.  On the spectrum you can probably get away with keeping all the tiles in memory all the time, so you’ve probs got an easier job there.
+
+Yellow tiles are used as “generic extras” and are always in memory (again you’d probs just keep the entire lot in memory)
+
+Green tiles are the player anim.
+
+Blue tiles are enemy anims.
+
+Pink tiles are item sprites and player harpoon (plus, at the end, an ‘icicle’ for the abyss levels)
+
+The panels I’ve left untouched as they are fairly obvious
+
+All the monochrome stuff isn’t used at all
+
+Cheers
+
+Dave

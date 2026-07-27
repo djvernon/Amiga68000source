@@ -1,0 +1,6 @@
+.sexyJacky sets up the title page, but the actual program starts at “.relocate”, line 467 in panic.asm
+
+From there it patches in the (previously defined in the loader) key definitions, does some different hardware guff depending on what machine it’s on, downloads the panels to the screen RAM, clears the screen, sets up the palette, sets up the snow tables, then does a JMP to ‘.sexyJacky’ which is the start of the game proper.  The previous code is then all trashed as it was running in screen RAM
+
+
+Try Easy68k for debugging
