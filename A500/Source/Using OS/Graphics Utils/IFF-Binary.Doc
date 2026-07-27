@@ -1,0 +1,103 @@
+
+		____________
+	       /	   /
+	      /____   ____/
+		  /  /
+		 /  /____________________________
+		/  / 	__________/    _________/
+	   ____/  /____	   ___/	       ___/
+	  /	      /	  /	      /
+	 /___________/ __/___________/
+
+
+
+
+	##########	        ooooo
+	#        #		    O
+	# #####  #		ooooo
+	# #   #  #		O
+	# *#**#  *		ooooo
+	#        #
+        * *****  *
+        * *   *  * ******* ******* ******* ******* *     *
+        * !!*!*  *    *    !     * !     * *     ! *!*!**!
+        !        !    :    :     : ::::::: :::::::    :
+        :::::::::: ::::::: :     : :     : :   :      :
+
+	«%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%»
+     
+	V1.0	Written OCT 1993.
+	V1.2	Written JAN 1994
+	V1.4	Written AUG 1994
+
+	All Code is Copyright 1993/1994 Jason Lucas.
+
+	
+
+ Welcome, this little converter was written so that I could convert the
+ new 8 bitplane Iff pictures that became available with the AGA/AA chip
+ set found in the A1200 and A4000 computers. 
+      This new version features two new commands and a new command line
+ reader making it easier both for me and for you to use.
+
+
+  Available options :-
+  ~~~~~~~~~~~~~~~~~
+
+    B - Place the colour map behind the binary image you have saved.
+	< default is before >
+
+    C - Cancel Saving colours. < default saves >
+
+    F - Save the colurs as a separate file. < default saves to binary file >
+
+    H - Instructs the program this is a HAM8 image for saving.
+	< default normal IFF image >
+
+    S - Change output file to sequential data. < default interleaved >
+
+    T - Select old 12 bit colour values. < default 24 bit >
+	
+
+  If no options are selected then the defaults will be used.
+
+
+ Additional Information
+ «====================»
+
+	If when saving the colours there are more than 32 ie new chipset
+  screen mode 64, 128 or 256 colours and they are the 24 bit size values,
+  they are arranged in the following format.
+
+   For example an Iff 128 colour image:-
+
+
+
+   First a bank of 128 words in the following order.
+
+   Colour Range   0 - 31, 32 - 63, 64 - 95, 96 - 127. Bits $ f0 f0 f0
+
+
+
+   Then a second bank of 128 words in the following order.
+
+   Colour Range   0 - 31, 32 - 63, 64 - 95, 96 - 127. Bits $ 0f 0f 0f
+
+
+
+   Compatability
+   ~~~~~~~~~~~~~
+
+	This converter should be compatible on all Amigas regardless
+   of memory, chipset type or kickstart version.
+
+
+
+
+
+
+
+
+
+
+
