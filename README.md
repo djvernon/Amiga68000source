@@ -1,7 +1,27 @@
 # Amiga68000source
 Amiga programs written in 68000 assembly language
 
-Most programs will build with HiSoft Devpac 3 (apart from AmigaMountainPanic - see section below)
+A varied collection of Amiga 68000 sources written from 1989 onwards.
+Includes demos, disk access, games (or parts of) and graphical effects, including texture mapping.
+Some were written by me and some by others.
+
+In particular there are source for:-
+All AmigaComputing magazine demos (Zowee, Picture-This, Heavy, Right-Button and Xmas).
+Disk access, mainly taken from Carrier Command's backup program.
+3D objects and worlds
+Blitter object drawing.
+Texture mapping.
+Games:-
+  Amiga Mountain Panic
+  Beast scroll (from Shadow of the Beast)
+  Program to make Carrier Command and Super Hang-On bootable disks.
+  Interphase 3D sources.
+  Stunt Car Racer source.
+
+
+# Building
+Most programs will build with HiSoft Devpac 3 (apart from AmigaMountainPanic - see section below).
+An archive of HiSoft Devpac 3.18 disks is included ("Devpac318.lha").
 
 
 # Running / exiting programs
