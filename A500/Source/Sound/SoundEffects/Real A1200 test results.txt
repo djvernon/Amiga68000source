@@ -1,0 +1,28 @@
+With degraded A1200
+-------------------
+SoundEffect.s
+  On first press (of fire button) after reset (or power up), it plays sample twice.
+  Afterwards it is fine (i.e. on subsequent button presses when program still running and every single time when program re-run).
+  Uses level 4 interrupt to stop the sound.  Works well but won't stop a playing sound part way through.
+
+SoundEffect2.s
+  Fine every time.
+  Uses a dbra delay (does not use level 4 interrupt).  Not ideal for a game as CPU time is wasted.  Works well and can stop a playing sound part way through.
+
+SoundEffect3.s
+  Fine every time.
+  Based upon Interphase code.
+  Uses level 4 interrupt to start/stop the sound and also uses the first available sound channel.  Works well but won't stop a playing sound part way through.
+
+
+SoundEffectTest.s
+  Always plays chime repeatedly.
+
+SoundEffectTest2.s
+  On first run after reset (or power up), it plays sample twice.
+  Afterwards it plays sample once (i.e. when program re-run).
+
+
+With standard A1200
+-------------------
+ALL results same as above.
