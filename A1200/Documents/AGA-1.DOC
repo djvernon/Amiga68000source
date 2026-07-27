@@ -1,0 +1,496 @@
+Path: pluto.uk03.bull.co.uk!mips2!news.bbn.com!usc!sol.ctr.columbia.edu!zaphod.mps.ohio-state.edu!swrinde!gatech!rutgers!cbmvax!chrisg
+From: chrisg@cbmvax.commodore.com (Chris Green)
+Newsgroups: comp.sys.amiga.advocacy
+Subject: Re: Amiga Blitter 40% slower than Atari Blitter (???)
+Message-ID: <35796@cbmvax.commodore.com>
+Date: 12 Oct 92 19:21:02 GMT
+References: <35531@cbmvax.commodore.com> <1992Oct4.192209.26719@news.th-darmstadt.de> <u894776.718249257@bruny> <1992Oct6.182456.39167@news.th-darmstadt.de> <1992Oct7.193633.23984@imada.ou.dk> <u894776.718581311@bruny> <1992Oct11.192443.23288@imada.ou.dk>
+Reply-To: chrisg@cbmvax.commodore.com (Chris Green)
+Organization: Commodore, West Chester, PA
+Lines: 381
+
+In article <1992Oct11.192443.23288@imada.ou.dk> micro@imada.ou.dk (Klaus Pedersen) writes:
+>OK, why not try to see who can do the fastest horiz line routine? 
+>Let's try to see who can write the fastest 4 plane Hline-fill with dither.
+
+
+No claims to be the fastest, but this routine is at least adequate.
+It is passed a list of y/leftx/rightx triplets. The macro is used to
+generate code specifically for each color. It handles 16, 32, or 64
+colors.
+
+ylrfill	macro	color
+; generate a ylrfill subroutine for color 'color' \1
+; entr (a4)=ylr list terminated by -1
+; register usage:
+; A0=ytab
+; A1=wordnum
+; A2=lwordmask
+; A3=rwordmask
+; A4=ylr list
+; A5=screen mem ptr
+; trashes all regs except a6+d5
+	xdef	xfill_\1
+wrong_order\@:
+	dbugs	'wrong order'
+	exg	d1,d2
+	bra.s	re_enter\@
+
+one_word\@:	bmi.s	wrong_order\@
+	move	0(a2,d1.w),d4	; left mask
+	and	0(a3,d2.w),d4	; right mask
+	beq.s	wrong_order\@
+
+	move.l	0(a0,d0.w),a5
+	add	d3,a5
+
+	ifne	(\1+1)-N_COLORS
+	 move	d4,d3
+	 not	d3
+	endc
+
+	ifne	(\1&2)
+	 or	d4,PLSIZE(a5)
+	else
+	 and	d3,PLSIZE(a5)
+	endc
+
+	ifne	(\1&4)
+	 or	d4,PLSIZE*2(a5)
+	else
+	 and	d3,PLSIZE*2(a5)
+	endc
+
+	ifne	(\1&8)
+	 or	d4,PLSIZE*3(a5)
+	else
+	 and	d3,PLSIZE*3(a5)
+	endc
+
+	ifge	N_PLANES-5
+	 ifne	(\1&16)
+	  or	d4,PLSIZE*4(a5)
+	 endc
+	 ifeq	(\1&16)
+	  and	d3,PLSIZE*4(a5)
+	 endc
+	 ifne	COLORS64
+	  ifne	(\1&32)
+	   or	d4,0(a5,a6.l)
+	  endc
+	  ifeq	(\1&32)
+	   and	d3,0(a5,a6.l)
+	  endc
+	 endc
+	endc
+
+	ifne	(\1&1)
+	 or	d4,(a5)
+	else
+	 and	d3,(a5)
+	endc
+	bra.s	fill_lp\@
+rts1\@	ifne	COLORS64
+	move.l	#_LinkerDB,a6
+	endc
+	rts
+xfill_\1
+	lea	ytab,a0
+	lea	wordnum,a1
+	lea	lwordmask,a2
+	lea	rwordmask,a3
+	ifne	COLORS64
+	move.l	#PLSIZE*5,a6	; must have because 8000*5>32767
+	endc
+	moveq	#0,d6
+	moveq	#-1,d7
+fill_lp\@	movem	(a4)+,d0/d1/d2	; y l r
+	dbugw	d0
+	dbugw	d1
+	dbugw	d2
+	add	d0,d0
+	bmi.s	rts1\@
+	add	d0,d0
+	add	d1,d1
+	add	d2,d2
+re_enter\@:
+	move	0(a1,d1.w),d3	; left wordnum
+	move	0(a1,d2.w),d4	; right wordnum
+	sub	d3,d4
+	ble.s	one_word\@
+
+	asr	#1,d4		; d4=#words-1
+	move.l	0(a0,d0.w),a5
+	add	d3,a5
+	move	0(a2,d1.w),d1	; left mask
+	move	0(a3,d2.w),d2	; right mask
+
+	ifne	((\1+1)-N_COLORS)
+	 move	d1,d3
+	 not	d3
+	endc
+
+	ifne	(\1&2)
+	 or	d1,PLSIZE(a5)
+	else
+	 and	d3,PLSIZE(a5)
+	endc
+
+	ifne	(\1&4)
+	 or	d1,PLSIZE*2(a5)
+	else
+	 and	d3,PLSIZE*2(a5)
+	endc
+
+	ifne	(\1&8)
+	 or	d1,PLSIZE*3(a5)
+	else
+	 and	d3,PLSIZE*3(a5)
+	endc
+
+	ifne	COLORS32+COLORS64
+	 ifne	(\1&16)
+	  or	d1,PLSIZE*4(a5)
+	 endc
+	 ifeq	(\1&16)
+	  and	d3,PLSIZE*4(a5)
+	 endc
+	 ifne	COLORS64
+	  ifne	(\1&32)
+	   or	d1,0(a5,a6.l)
+	  endc
+	  ifeq	(\1&32)
+	   and	d3,0(a5,a6.l)
+	  endc
+	 endc
+	endc
+
+	ifne	(\1&1)
+	 or	d1,(a5)+
+	else
+	 and	d3,(a5)+
+	endc
+
+	subq	#1,d4
+	ble.s	skip_lp\@
+
+	lsr	#1,d4
+	bcc.s	no_xtra\@
+	ifne	(\1&2)
+	 move	d7,PLSIZE(a5)
+	else
+	 move	d6,PLSIZE(a5)
+	endc
+
+	ifne	(\1&4)
+	 move	d7,PLSIZE*2(a5)
+	else
+	 move	d6,PLSIZE*2(a5)
+	endc
+
+	ifne	(\1&8)
+	 move	d7,PLSIZE*3(a5)
+	else
+	 move	d6,PLSIZE*3(a5)
+	endc
+
+	ifne	COLORS32+COLORS64
+	 ifne	(\1&16)
+	  move	d7,PLSIZE*4(a5)
+	 endc
+	 ifeq	(\1&16)
+	  move	d6,PLSIZE*4(a5)
+	 endc
+	 ifne	COLORS64
+	  ifne	(\1&32)
+	   move	d7,0(a5,a6.l)
+	  endc
+	  ifeq	(\1&32)
+	   move	d6,0(a5,a6.l)
+	  endc
+	 endc
+	endc
+
+	ifne	(\1&1)
+	 move	d7,(a5)+
+	else
+	 move	d6,(a5)+
+	endc
+no_xtra\@	subq	#1,d4
+	bmi.s	skip_lp\@
+fill_word\@	ifne	(\1&2)
+	 move.l	d7,PLSIZE(a5)
+	else
+	 move.l	d6,PLSIZE(a5)
+	endc
+
+	ifne	(\1&4)
+	 move.l	d7,PLSIZE*2(a5)
+	else
+	 move.l	d6,PLSIZE*2(a5)
+	endc
+
+	ifne	(\1&8)
+	 move.l	d7,PLSIZE*3(a5)
+	else
+	 move.l	d6,PLSIZE*3(a5)
+	endc
+
+	ifne	COLORS32+COLORS64
+	 ifne	(\1&16)
+	  move.l	d7,PLSIZE*4(a5)
+	 endc
+	 ifeq	(\1&16)
+	  move.l	d6,PLSIZE*4(a5)
+	 endc
+	 ifne	COLORS64
+	  ifne	(\1&32)
+	   move.l	d7,0(a5,a6.l)
+	  endc
+	  ifeq	(\1&32)
+	   move.l	d6,0(a5,a6.l)
+	  endc
+	 endc
+	endc
+
+	ifne	(\1&1)
+	 move.l	d7,(a5)+
+	else
+	 move.l	d6,(a5)+
+	endc
+	dbra	d4,fill_word\@
+
+skip_lp\@	ifne	(\1+1)-N_COLORS
+	 move	d2,d3
+	 not	d3
+	endc
+
+	ifne	(\1&2)
+	 or	d2,PLSIZE(a5)
+	else
+	 and	d3,PLSIZE(a5)
+	endc
+
+	ifne	(\1&4)
+	 or	d2,PLSIZE*2(a5)
+	else
+	 and	d3,PLSIZE*2(a5)
+	endc
+
+	ifne	(\1&8)
+	 or	d2,PLSIZE*3(a5)
+	else
+	 and	d3,PLSIZE*3(a5)
+	endc
+
+	ifne	COLORS32+COLORS64
+	 ifne	(\1&16)
+	  or	d2,PLSIZE*4(a5)
+	 endc
+	 ifeq	(\1&16)
+	  and	d3,PLSIZE*4(a5)
+	 endc
+	 ifne	COLORS64
+	  ifne	(\1&32)
+	   or	d2,0(a5,a6.l)
+	  endc
+	  ifeq	(\1&32)
+	   and	d3,0(a5,a6.l)
+	  endc
+	 endc
+	endc
+
+	ifne	(\1&1)
+	 or	d2,(a5)
+	else
+	 and	d3,(a5)
+	endc
+
+	bra	fill_lp\@	; in 16 color mode this will be a .s,
+			; otherwise it will be a .w
+
+
+	endm
+
+
+	ylrfill	0
+	ylrfill	1
+	ylrfill	2
+	ylrfill	3
+	ylrfill	4
+	ylrfill	5
+	ylrfill	6
+	ylrfill	7
+	ylrfill	8
+	ylrfill	9
+	ylrfill	10
+	ylrfill	11
+	ylrfill	12
+	ylrfill	13
+	ylrfill	14
+	ylrfill	15
+	ifne	COLORS32+COLORS64
+	ylrfill	16
+	ylrfill	17
+	ylrfill	18
+	ylrfill	19
+	ylrfill	20
+	ylrfill	21
+	ylrfill	22
+	ylrfill	23
+	ylrfill	24
+	ylrfill	25
+	ylrfill	26
+	ylrfill	27
+	ylrfill	28
+	ylrfill	29
+	ylrfill	30
+	ylrfill	31
+	ifne	COLORS64
+	ylrfill	32
+	ylrfill	33
+	ylrfill	34
+	ylrfill	35
+	ylrfill	36
+	ylrfill	37
+	ylrfill	38
+	ylrfill	39
+	ylrfill	40
+	ylrfill	41
+	ylrfill	42
+	ylrfill	43
+	ylrfill	44
+	ylrfill	45
+	ylrfill	46
+	ylrfill	47
+	ylrfill	48
+	ylrfill	49
+	ylrfill	50
+	ylrfill	51
+	ylrfill	52
+	ylrfill	53
+	ylrfill	54
+	ylrfill	55
+	ylrfill	56
+	ylrfill	57
+	ylrfill	58
+	ylrfill	59
+	ylrfill	60
+	ylrfill	61
+	ylrfill	62
+	ylrfill	63
+	endc
+	endc
+	end
+-- 
+*-------------------------------------------*---------------------------*
+|Chris Green - Graphics Software Engineer   - chrisg@commodore.COM      f
+|                  Commodore-Amiga          - uunet!cbmvax!chrisg       n
+|My opinions are my own, and do not         - icantforgettheimpression  o
+|necessarily represent those of my employer.- youmadeyouleftaholeinthe  r
+|"A screaming comes across the sky..."      - backofmyhead              d
+*-------------------------------------------*---------------------------*
+
+Path: pluto.uk03.bull.co.uk!know!cass.ma02.bull.com!think.com!spool.mu.edu!agate!usenet.ins.cwru.edu!gatech!rutgers!cbmvax!chrisg
+From: chrisg@cbmvax.commodore.com (Chris Green)
+Newsgroups: comp.sys.amiga.applications
+Subject: Re: More 4000 compatible software
+Message-ID: <36761@cbmvax.commodore.com>
+Date: 6 Nov 92 14:17:23 GMT
+References: <Bx8yKI.BFE@fc.hp.com> <David_Corn.0ii2@fcircus.sat.tx.us>
+Reply-To: chrisg@cbmvax.commodore.com (Chris Green)
+Organization: Commodore, West Chester, PA
+Lines: 27
+
+In article <David_Corn.0ii2@fcircus.sat.tx.us> David_Corn@fcircus.sat.tx.us (David Corn) writes:
+>
+>In <Bx8yKI.BFE@fc.hp.com>, koren@fc.hp.com (Steve Koren) writes:
+>> When you scroll the starfield, *wham!*.  You get a new display right
+>> away, instead of having to wait like on a non-AGA machine.
+>> 
+>>  - steve
+>
+>
+>D*mn braggart..grin!  How about some WritePixel and other AIBB4.x
+>statistics?  Can you give us any numbers?
+>
+	Note that the AIBB WritePixel test is no longer a good benchmark
+_for HARDWARE_. The 3.0 ROM in the A4000 and A1200 contain a new optimized
+WritePixel routine which can run around 3 times faster. Running this
+test on a 25mhz A3000 with a 3.0 kickstart shows it being 3 times faster
+than a 25mhz A3000 in AIBB! There are also other graphics speedups on the
+AGA machines which come from software, not hardware.
+
+-- 
+*-------------------------------------------*---------------------------*
+|Chris Green - Graphics Software Engineer   - chrisg@commodore.COM      f
+|                  Commodore-Amiga          - uunet!cbmvax!chrisg       n
+|My opinions are my own, and do not         - icantforgettheimpression  o
+|necessarily represent those of my employer.- youmadeyouleftaholeinthe  r
+|"A screaming comes across the sky..."      - backofmyhead              d
+*-------------------------------------------*---------------------------*
+
+Path: pluto.uk03.bull.co.uk!know!hri.com!spool.mu.edu!decwrl!concert!rutgers!cbmvax!chrisg
+From: chrisg@cbmvax.commodore.com (Chris Green)
+Newsgroups: comp.sys.amiga.programmer
+Subject: Re: LoadRGB8() ????
+Keywords: amiga graphics technical programmer AGA
+Message-ID: <36756@cbmvax.commodore.com>
+Date: 6 Nov 92 13:42:40 GMT
+References: <Bx93A3.B0M@sunlab1.bath.ac.uk>
+Reply-To: chrisg@cbmvax.commodore.com (Chris Green)
+Organization: Commodore, West Chester, PA
+Lines: 50
+
+In article <Bx93A3.B0M@sunlab1.bath.ac.uk> ma9tn@sunlab1.bath.ac.uk (T Nettleship) writes:
+>
+>Having read about the new AGA chipset and it's new graphics
+>modes, I have decided to modify a fractal program of my own
+>to use the 256 colour register mode.
+>
+>I have one problem with the conversion. I can open an 8-bitplane
+>screen at the appropriate resolutions, and render to it. This
+>works fine. However, I can't load the new AGA 24-bit palette
+>registers.
+>
+>I use the graphics library call LoadRGB4(), but this only uses
+>12-bit colours, so I am losing a lot of colour definition. What
+>I want to know is what is the library offset / registers definition
+>for a corresponding 24-bit regs function (which I assume will
+>be called LoadRGB8())?
+>
+	You want to call LoadRGB32.
+	LoadRGB32(a0=viewport,a1=table).
+
+	"table" is a pointer to a description of what colors to load with
+what values. Each entry of the list starts with a word for how many colors
+to load, followed by a word for starting color. The color values follow
+with 3 longwords for each RGB value. The table is terminated with a 0 count.
+
+	So, to load 3 colors the table might be:
+
+ULONG table[]={ (3<<16)+0,	/* load 256 color starting at 0 */
+		0xffffffff,0,0,	/* color 0=full red	*/
+		0,0xffffffff,0,	/* color 1=full green	*/
+		0,0,0xffffffff,	/* color 2=full blue	*/
+		0		/* terminator */ };
+
+a SAS style pragma is:
+
+#pragma libcall GBASE LoadRGB32 372 9802
+
+for assembly,
+
+_LVOLoadRGB32	equ	-$372
+
+	Good luck with your program.
+-- 
+*-------------------------------------------*---------------------------*
+|Chris Green - Graphics Software Engineer   - chrisg@commodore.COM      f
+|                  Commodore-Amiga          - uunet!cbmvax!chrisg       n
+|My opinions are my own, and do not         - icantforgettheimpression  o
+|necessarily represent those of my employer.- youmadeyouleftaholeinthe  r
+|"A screaming comes across the sky..."      - backofmyhead              d
+*-------------------------------------------*---------------------------*
+
+

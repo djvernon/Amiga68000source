@@ -1,0 +1,34 @@
+A1200 with Apollo 1240/28 (68040.library, SetPatch V40.16, QuickROM)
+-------------------------
+TextureMap.AGA.fast.fps.s  - 31.1 at z-rotate, 27.3 finally
+(54.6, 43.7 without C2P, i.e. by pressing right mouse button)
+TextureMap2.AGA.fast.fps.s - 32.9 at z-rotate, 28.8 finally
+(60.3, 47.7 without C2P)
+
+A1200 with Blizzard 1230-IV (SetPatch V40.16)
+---------------------------
+TextureMap.AGA.fast.fps.s  - 29.0 at z-rotate, 24.2 finally
+(48.0, 36.2 without C2P)
+TextureMap2.AGA.fast.fps.s - 26.5 at z-rotate, 22.3 finally
+(41.7, 32.2 without C2P)
+
+
+(TextureMap fps values below are worst ones seen when doing first z-rotate)
+
+Normal A1200
+------------
+TextureMap.s is actually fastest of the seven TextureMap?.s files
+Txwalls(020+)6.s - 5.5 (when zoomed in twice)
+Txwalls(020+)7.s - 6.2 (when zoomed in twice)
+
+A1200 with Apollo 1240/28 (68040.library, no SetPatch)
+-------------------------
+TextureMap.s  - 15
+TextureMap2.s - 16
+TextureMap3.s - 10
+TextureMap4.s - 8
+TextureMap5.s - 7
+TextureMap6.s - 7
+TextureMap7.s - 8
+Txwalls(020+)6.s - 7.1 (when zoomed in twice)
+Txwalls(020+)7.s - 8.3 (when zoomed in twice)
