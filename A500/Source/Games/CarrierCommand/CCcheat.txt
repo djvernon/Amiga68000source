@@ -1,0 +1,18 @@
+Amiga Cheat Mode
+----------------
+Pause the game then type "THE BEST IS YET TO BE" then press '+' on numeric keypad.
+(+/- then toggles Manta and Walrus invincibility)
+
+During the game, pause and press the following keys on the numeric keypad:-
+1 - refuel Manta or Walrus (only on information screen).
+2 - repair damage to Manta or Walrus.
+3 - send Carrier/Manta/Walrus immediately to destination.
+6 - show colour palette.
+7 - time goes quicker.
+9 - show current difficulty level.
+
+On the title screen:-
+'+' and '-' on keypad cycle through objects.
+Escape toggles power light on or off.
+6 on keypad displays the colour palette.
+7 pauses the animation.

@@ -1,0 +1,285 @@
+ASHOREAD.S
+----------
+DO_TRACK1) To read track 1, as per SHO boot sector routine, then save it as 'SHOTrack1.bin'
+DO_TRACK2) To execute part of decrypted track 1 routine (SHO loader), to read track 2 sector 0, then save it as 'SHOT2S0.bin'
+
+B_SHO_LoadTrack1.s
+------------------
+To load the previously stored SHOTrack1.bin to $71ffc, decrypt it then loop forever (to allow saving in Action Replay)
+
+C_SHO_Loader.s
+--------------
+Full decrypted track 1 routine (SHO loader)
+
+
+
+
+.loop	bra.s	.loop		Hex = $60fe
+
+$72016: 06d4	(Final value 0034)
+
+$72038: 68d8 009e	(Final value 6800 009e)
+
+
+DiskData
+--------
+In Track2To75.BIN, GAME starts at offset 128000, with length 288256
+
+
+Detailed notes
+--------------
+1. Make CCCustomDiskMaker.s relocatable, based upon:-
+  Disks\Disk_Maker_1200.s - uses vhposr for delays
+
+
+2. Base SHOCustomDiskMaker.s upon CCCustomDiskMaker.s
+
+screen $77400 to $7f100 = 32000 bytes
+bootblockdata $73400
+trackDataRaw $73800
+
+gap data 1140
+write 13120
+raw track length 13120-1140+700 = 12680 (approx)
+With WinUAE, raw track length 12582
+
+44 89 2A AA AA AA 0A 28 00 00 04 40 00 00 55 55 55 55 22 44 44 89 2A AA AA AA AA AA 49 54 91 54 91 25 2A 52 91 29 2A 91 51 45 45 15 45 54 51 11 44 51 51 24 45 4A 51 24 54 44 51 29 55 49 45 25 55 49 45 54 92 AA AA 91 2A
+44 89 2A AA AA AA 0A 28 00 00 04 40 00 00 55 55 55 55 22 44 44 89
+
+44 89 2A AA AA AA 00 00 00 00 00 00 00 00 AA AA AA AA 44 89 44 89
+
+44 89 2A AA AA AA 00 00 00 00 08 81 40 00 55 55 55 55 22 44 44 89
+
+repeats
+44 89 2A AA AA AA 00 00 A0 00 04 40 00 00 55 55 55 55 22 44 44 89
+44 89 2A AA AA AA 00 00 A0 02 80 02 80 01 55 55 55 54 44 89
+44 89 2A AA AA AA 00 0A 00 28 04 40 05 00 2A AA AA AA 91 22 44 89
+44 89 2A AA AA AA 00 48 00 00 00 08 92 C0 AA AA AA AA 44 89 44 89
+
+--------------
+44 89 2A AA AA AA 00 00 0A 00 06 00 18 00 55 55 55 55 22 44 44 89
+
+44 89 2A AA AA AA 00 00 00 00 00 00 00 14 AA AA AA AA 44 89 44 89
+
+44 89 2A AA AA AA 06 0A 00 00 C6 28 00 00 AA AA AA AA 44 89 44 89
+
+44 89 2A AA AA AA 0A 00 C0 00 00 00 00 00 2A AA AA AA 91 22 44 89
+
+4489: 0100010010001001
+9122: 1001000100100010
+
+	move.b	#$12,d0
+L724f4
+	eor.b	d0,(a1)
+	move.b	(a1)+,d0
+	dbra	d1,L724f4
+
+Decoded: 44 33 22 11
+
+       12  44  33  22
+       xor xor xor xor
+       44  33  22  11
+       =   =   =   =
+Coded: 56  77  11  33
+
+(Working out:-
+12 eor xx = 44, therefore xx = 12 eor 44 = 56
+44 eor yy = 33, therefore yy = 44 eor 33 = 77
+			  zz = 33 eor 22 = 11
+			  ?? = 22 eor 11 = 33)
+
+
+Blit decode
+-----------
+BLTAPT: $AAAAAAAA & $55555555			Data for even bits
+
+BLTBPT: ($AAA92A94 >> 15) & !($55555555) 	Data for odd bits
+
+Minterm     ABC ABc AbC Abc aBC aBc abC abc
+Input bits: 111 110 101 100 011 010 001 000
+e4: 11100100
+ABC + ABc + AbC + aBc = (ABC + AbC) + (ABc + aBc) = AC + Bc
+
+
+Carrier Command Track Format.
+-----------------------------
+Track Gap - $AAAAAAAA longwords (1140 bytes total)
+
+Track Start:-
+	$AAAAAAAA
+
+	$44894489 - two sync markers.
+
+	Two longwords - MFM coded $FFFFFFTN
+			(TN - track number)
+
+	Data checksum - two longwords as MFM
+
+	Actual data - 10240 bytes as MFM
+
+
+SHO Track Format.
+-----------------
+Track Gap - $AAAAAAAA longwords (1140 bytes total)
+
+Track Start:-
+	$AAAAAAAA
+
+	$44894489 - two sync markers.
+
+(*)	$AAAAAAAA (Corrected to $2AAAAAAA - TODO check)
+
+(*)	Eight unknown bytes (possibly with invalid clock bits)
+
+(*)	$AAAAAAAA
+
+(*)	$44894489 - two sync markers.
+
+(*)	    $AAAA (Corrected to $2AAA - TODO check)
+
+Start of data for blit decoding:-
+(*)
+5640 bytes of data for even bits	(First four bytes may always be $AAAAAAAA)
+5640 bytes of data for odd bits
+
+NB first four decoded bytes aren't output as sector data:-
+ First word, $728ae, must be zero
+ Second word, $728b0, is track number
+
+(*) = Different from CC
+
+
+Track 2 checksum $2ACEB281
+Encrypted: $2A6E431B
+
+
+For data #$00000002, code.longword gives:-
+$AAAAAAA9	i.e. odd bits coded
+$2AAAAAAA	i.e. even bits coded
+This is the opposite way around to SHO.
+
+blit.code.data currently also giving:-
+$AAAAAAA9	i.e. odd bits coded
+$2AAAAAAA	i.e. even bits coded
+
+When width doubled to 8 bytes, output goes wrong after four bytes
+
+
+odd: (2924a515 & 55555555) << 1
+even: 514a4524
+
+odd: (2a94a4a9 & 55555555) << 1
+even: 49549154
+
+
+The raw MFM data that must be presented to the disk controller will be twice as large as
+the unencoded data. The following Table shows the relationship:
+ 1 ---> 01
+ 0 ---> 10 ;if following a 0
+ 0 ---> 00 ;if following a 1
+
+
+First words for blit decoding: $AAAA AAAA 9294 5452
+
+
+TestingThe8Bytes
+----------------
+Try writing different values for the magic 8 bytes, then reading back using SaveTrackRaw.s
+00000000 00000000 => T2RAW0.BIN, T3RAW0.BIN
+000a000a 0a000a00 => T2RAWA.BIN, T3RAWA.BIN
+
+Done
+----
+Wrote test disk then try C_SHO_LoaderTest.s with/without USE_INDEX:-
+  With USE_INDEX: Doesn't work
+  Without: Loads but won't pass 'insert disk and press space' check
+
+Tried SaveTrackRaw.s against test disk
+
+Read DiskData again for comparison against current copies: Bottom and top OK
+
+
+A1200 memory usage
+------------------
+With NewShell
+Available	In-Use	Maximum	Largest
+1813360		282768	2096128	1798592
+
+Without NewShell
+Available	In-Use	Maximum	Largest
+1825584		270544	2096128	1819872
+
+- Better without NewShell
+
+Without Rtpatch
+1874384		221744
+
+Without IPrefs
+1910552		185576
+
+1911232		184896
+
+
+DONE
+----
+1. Try new maker (index code updated) on real hardware (and remember it has insufficient RAM to write both sides together)		"; WIP wait for INDEX signal"
+	Result: Works
+
+2. Try new maker with eight bytes set to 0 (marked "TODO"), then see if C_SHO_Loader works with USE_COPY_PROTECTION defined
+	Result: Loads but won't pass 'insert disk and press space' check
+
+3. Read track 0 bottom (containing boot sectors)
+
+4. Didn't understand why Loader with USE_COPY_PROTECTION defined doesn't work on real machine.  Unfortunately can't test in WinUAE as emulation always gives the same eight bytes.
+  - Tested if the eight byte comparison is the problem, by replacing 'bhi	L593e' with NOPs (i.e. do in Loader)
+	Result: Yes it is the problem - game loads fine with 'bhi' replaced
+
+5. Test Maker / Loader new versions that don't have any USE_INDEX_SIGNAL (I)
+	Result 1: Wouldn't load - possible bad disk.
+	Result 2: Loaded but won't pass 'insert disk and press space' check
+
+6. For comparison, test Maker / Loader new versions with USE_COPY_PROTECTION (C) and (I) defined:
+	Result:  Works fine
+
+7. For comparison, test Maker / Loader new versions without C or I version
+	Result: Loads but won't pass 'insert disk and press space' check
+		- Therefore either keep USE_INDEX_SIGNAL or also disable USE_INDEX_SIGNAL usage in game code
+
+Conclusion: Currently works best without USE_COPY_PROTECTION but with USE_INDEX_SIGNAL
+
+8. Read track 0 top (high scores), to HS.BIN
+
+9. Read track 0 top raw (using SaveTrackRaw.s with TRACK_NUMBER = 0, TRACK_LEN = 2068, topSide set, TrackRawFileName changed), to HSRAW.BIN
+
+Conclusion: Can just use game to write default high scores track (don't need to extend maker to write them)
+
+
+10. Wrote Loader (with first 'boot' section removed) to track 1
+
+11. Tidied up / optimised new loader write code
+
+12. Removed unused decrypt code from loader (SHOTrack1Custom.s), so that standard SHO_Boot.s can be used (i.e. that jumps to $72000)
+
+13. Tidied / updated SHOTrack1Custom.s by comparing with other SHODiskPeek sources.  Changed to use loadScreenCopper fixed address
+
+14. Wrote Boot routine to track 0 (25/07/2019: Worked both in WinUAE and real A1200!)
+
+15. Worked out why high scores wouldn't save (and therefore wouldn't verify either) on real A1200.  SHO save routine wasn't clearing WORDSYNC bit, which is incorrect.
+
+    From Toni Wilen, on English Amiga Board:-
+    Remember to disable WORDSYNC when writing. It has undocumented side-effect: Start write with WORDSYNC enabled: Paula starts _reading_ from floppy without storing
+    the data (just like it does when wordsynced read starts), write starts when wordsync register matches with data from disk: If track does not have any old wordsync
+    markers: writing never starts, disk block interrupt never gets set.
+
+
+TODO TEST
+---------
+
+TODO DEV
+--------
+-
+
+
+576c
+
+

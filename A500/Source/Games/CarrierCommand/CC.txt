@@ -1,0 +1,94 @@
+I recently managed to recover the source for CC from some 22 year old floppies.
+Sadly, while I have everything to rebuild the PC version, the disk routines and a few others bits are missing from the 68000 versions.
+Still, the PC was better, other than the sound.
+For more info on the CC remake, see the "Carrier Command" facebook page.
+
+Regards web page, I'm typing up "The Story of Carrier Command" and might put it up somewhere.
+Believe it or not, Tank Duel, Star Strike, and Star Strike 2 were coded on the Spectrum by typing Z80 assembler into REM statements.
+Bombs? I don't recall what we did if an exception went off, but the final stages on the ST version were tense beyond belief.
+A few bug fixes did get slipstreamed, but I don't recall many crashing bugs.
+
+We signed the contract on the day after my 24th birthday in 1987. We then had 4.5 months to deliver on ST, one more month for Mac and Amiga, another month for PC,
+and yet another for three Z80 versions. We must have been mad!
+The ST version took just over a year, the Amiga came out in July 1988, and the PC version in July 1989.
+The ST version was about 50,000 lines of 68000 assembler and the PC about 76,000 lines of 8086 assembler. We had no debug tools other than coffee.
+
+Yup, just two of us on the 16-bit versions. We did the ST and Amiga versions first, and getting these out took the pressure off us.
+This meant we could make improvements to the AI etc. for the PC version, but TBH there are little tweaks all over the place.
+I'm currently writing a walk-through of the original PC code and may release this with the source some time.
+However, it's about 50,000 line of 8086 assembler and it's not pretty!
+
+
+
+
+Emulator notes
+--------------
+MAME m68000 generates all instruction handlers
+These do have opcode in function names, but still not obvious e.g. 'm68k_op_add_16_er_ai'
+They use shifting instead of byte/word/long union
+
+WinUAE generates all instruction handlers
+
+
+
+
+About PC version
+----------------
+gadgetmind
+Jan 28 2011, 17:39
+Here is what the WHATS.NEW file says -
+
+--------------------------------------------------
+Attention Gary Scheinwald
+
+Here is a quick list of what has gone into PC carrier that wasn't in the ST
+or Amiga versions
+
+. Warp mode (on Carrier map screen) to bend time to let you get to places
+with vastly reduced boredom levels
+
+. Draggable radars in the Planes and Tanks (these get 'knocked' out of the
+way by the pop-up missile window
+
+. The tank missile now rolls as it flies
+
+. You can get a view from all four planes/tanks by clicking into the
+plane/tank info screen window
+
+. Greatly improved enemy strategy
+
+. Far better head-on battles with enemy carrier
+
+. Enemy carrier will sometimes attack you!
+
+These are some of the features of the PC version that it would be nice to
+mention
+
+. Video modes
+. VGA
+. EGA
+. CGA
+. Tandy 16-colour
+. Hercules
+
+. Input devices
+. Keyboard
+. Joystick (Amstrad or IBM analog)
+. Microsoft Mouse
+
+. You can use TSR's when the game is paused (with ctrl-s)
+
+. Fits on to a single unprotected disk which is only accessed when you change video modes
+
+. Zero-crossing sampled sound
+--------------------------------------------------
+
+Ian
+
+
+
+
+Amiga source notes
+------------------
+The KIXX version is the newest (says "Microprose Version 1990") - could do with comparing this to Version A1.2
+In Version A1.2, circle routine is at $6a4c (with possibly d0 = radius, d1 = colour, d2 = x, d3 = y)
