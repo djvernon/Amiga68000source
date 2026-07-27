@@ -6,17 +6,16 @@ Includes demos, disk access, games (or parts of) and graphical effects, includin
 Some were written by me and some by others.
 
 In particular there are source for:-
-All AmigaComputing magazine demos (Zowee, Picture-This, Heavy, Right-Button and Xmas).
-Disk access, mainly taken from Carrier Command's backup program.
-3D objects and worlds
-Blitter object drawing.
-Texture mapping.
-Games:-
-  Amiga Mountain Panic
-  Beast scroll (from Shadow of the Beast)
-  Program to make Carrier Command and Super Hang-On bootable disks.
-  Interphase 3D sources.
-  Stunt Car Racer source.
+1. All AmigaComputing magazine demos (Zowee, Picture-This, Heavy, Right-Button and Xmas).
+2. Disk access, mainly taken from Carrier Command's backup program.
+3. 3D objects and worlds
+4. Blitter object drawing.
+5. Texture mapping.
+6. Amiga Mountain Panic game.
+7. Beast scroll (from Shadow of the Beast).
+8. Program to make Carrier Command and Super Hang-On bootable disks.
+9. Interphase 3D sources.
+10. Stunt Car Racer source.
 
 
 # Building
