@@ -5,10 +5,10 @@ A varied collection of Amiga 68000 sources written from 1989 onwards.
 Includes demos, disk access, games (or parts of) and graphical effects, including texture mapping.
 Some were written by me and some by others.
 
-In particular there are source for:-
+In particular there are sources for:-
 1. All AmigaComputing magazine demos (Zowee, Picture-This, Heavy, Right-Button and Xmas).
 2. Disk access, mainly taken from Carrier Command's backup program.
-3. 3D objects and worlds
+3. 3D objects and worlds.
 4. Blitter object drawing.
 5. Texture mapping.
 6. Amiga Mountain Panic game.
@@ -51,3 +51,4 @@ It was developed using "WinUAEDemoToolChain_4" on a PC (using Visual Studio), ra
 An archive of "WinUAEDemoToolChain_4" has therefore also been included.
 After extracting this archive, open \WinUAEDemoToolChain_4\VisualStudio\MP.sln in Visual Studio 2026.
 Then select Build Solution and the executable "MP" should be created under \WinUAEDemoToolChain_4\DH0\
+"MP" can then be run on an emulator such as WinUAE (using an A500 configuration).
